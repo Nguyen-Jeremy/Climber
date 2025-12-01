@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amp;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -27,6 +28,7 @@ private TalonFX moteurBras;
 private TalonFX moteurCage;
 private CANcoder CANCoder = new CANcoder(1);
 private boolean actif;
+private TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
 
 private final CANdi _CANdi;
 public Climber(){
@@ -34,6 +36,8 @@ public Climber(){
     moteurCage = new TalonFX(46);
     this._CANdi = new CANdi(35);
      actif = this._CANdi.getS1State().getValue() == S1StateValue.Low;
+     intakeConfig.CurrentLimits.StatorCurrentLimit = Constants.statorCurrentLimit.in(Amps);
+     moteurCage.getConfigurator().apply(intakeConfig);
   
 }
 
@@ -61,7 +65,7 @@ public Command raiseArmCommand(){
     return run(() -> raiseArm(4)).until(() -> getAngle().gte(Degrees.of(Constants.angleBrasMax))).finallyDo(() -> stopArm());
 }
 public Command intakeCageCommand(){
-    return run(() -> intakeCage(4)).until(() -> moteurCage.getSupplyCurrent().getValue().gte(Current.ofBaseUnits(Constants.supplyCurrentLimit, Amp)));
+    return run(() -> intakeCage(4)).until(() -> moteurCage.getStatorCurrent().getValue().gte(Constants.statorCurrentLimit));
 }
 public Command raiseRobot(){
     return run(() -> stopArm()).until(() -> actif == true).finallyDo(() -> raiseArm(Constants.constantV));

@@ -3,6 +3,13 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import static edu.wpi.first.units.Units.Amps;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+
+import edu.wpi.first.units.CurrentUnit;
+import edu.wpi.first.units.measure.Current;
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -14,8 +21,8 @@ package frc.robot;
  */
 public final class Constants {
 
-  public static final double supplyCurrentLimit = 50;
-  public static final double angleBrasMax = 90;
+  public static final Current statorCurrentLimit = Amps.of(100);
+  public static final double angleBrasMax = -10000;
   public static final double constantV = 2;
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
