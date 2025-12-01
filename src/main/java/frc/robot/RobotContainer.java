@@ -10,10 +10,16 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.ExampleSubsystem;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.StatusSignal;
+
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -59,8 +65,7 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     new JoystickButton(joystick, 1).onTrue(
-      climber.run(() -> climber.climb()).until(() -> climber.getAngle().gte(Degrees.of(90)))
-    );
+      climber.climbCommand());
     
 
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
