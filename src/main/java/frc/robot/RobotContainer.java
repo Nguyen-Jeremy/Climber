@@ -54,7 +54,14 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     new JoystickButton(joystick, 1).onTrue(
-      climber.climbCommand());
+      climber.raiseArmCommand()
+      );
+      new JoystickButton(joystick, 2).whileTrue(
+        climber.intakeCageCommand()
+      );
+      new JoystickButton(joystick, 3).onTrue(
+        climber.raiseRobot()
+      );
   }
 
   /**

@@ -40,7 +40,6 @@ public Climber(){
     moteurCage = new TalonFX(46);
     this._CANdi = new CANdi(35);
      actif = this._CANdi.getS1State().getValue() == S1StateValue.Low;
-     intakeConfig.CurrentLimits.StatorCurrentLimit = Constants.statorCurrentLimit.in(Amps);
      brasConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
      brasConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
      intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -74,15 +73,10 @@ public Command raiseArmCommand(){
     return run(() -> raiseArm(-4)).until(() -> getAngle().gte(Degrees.of(Constants.angleBrasMax))).finallyDo(() -> stopArm());
 }
 public Command intakeCageCommand(){
-    return run(() -> intakeCage(4)).until(() -> moteurCage.getStatorCurrent().getValue().gte(Constants.statorCurrentLimit));
+    return run(() -> intakeCage(4)).finallyDo(() -> stopCage());
 }
 public Command raiseRobot(){
     return run(() -> raiseArm(-4)).until(() -> actif == true).finallyDo(() -> stopArm());
-}
-public Command climbCommand(){
- return new SequentialCommandGroup(
-    raiseArmCommand(), intakeCageCommand(), raiseRobot()
- );
 }
 
 }
