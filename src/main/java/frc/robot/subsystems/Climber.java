@@ -11,6 +11,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.S1StateValue;
 
 import edu.wpi.first.units.CurrentUnit;
@@ -29,6 +31,8 @@ private TalonFX moteurCage;
 private CANcoder CANCoder = new CANcoder(1);
 private boolean actif;
 private TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
+private TalonFXConfiguration brasConfig = new TalonFXConfiguration();
+
 
 private final CANdi _CANdi;
 public Climber(){
@@ -37,6 +41,11 @@ public Climber(){
     this._CANdi = new CANdi(35);
      actif = this._CANdi.getS1State().getValue() == S1StateValue.Low;
      intakeConfig.CurrentLimits.StatorCurrentLimit = Constants.statorCurrentLimit.in(Amps);
+     brasConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+     brasConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+     intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+     moteurBras.getConfigurator().apply(brasConfig);
      moteurCage.getConfigurator().apply(intakeConfig);
   
 }
@@ -62,13 +71,13 @@ public Angle getAngle(){
    return CANCoder.getPosition().getValue();
 }
 public Command raiseArmCommand(){
-    return run(() -> raiseArm(4)).until(() -> getAngle().gte(Degrees.of(Constants.angleBrasMax))).finallyDo(() -> stopArm());
+    return run(() -> raiseArm(-4)).until(() -> getAngle().gte(Degrees.of(Constants.angleBrasMax))).finallyDo(() -> stopArm());
 }
 public Command intakeCageCommand(){
     return run(() -> intakeCage(4)).until(() -> moteurCage.getStatorCurrent().getValue().gte(Constants.statorCurrentLimit));
 }
 public Command raiseRobot(){
-    return run(() -> stopArm()).until(() -> actif == true).finallyDo(() -> raiseArm(Constants.constantV));
+    return run(() -> raiseArm(-4)).until(() -> actif == true).finallyDo(() -> stopArm());
 }
 public Command climbCommand(){
  return new SequentialCommandGroup(
